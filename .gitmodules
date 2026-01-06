@@ -1,0 +1,3 @@
+[submodule "plivo-android-quickstart-app"]
+	path = plivo-android-quickstart-app
+	url = https://github.com/plivo/plivo-android-quickstart-app.git

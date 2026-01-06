@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 7.1.3" type="baseline" client="gradle" dependencies="false" name="AGP (7.1.3)" variant="all" version="7.1.3">
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="                        String _issue = issue.toUpperCase();"
+        errorLine2="                                              ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/plivo/endpoint/Endpoint.java"
+            line="615"
+            column="47"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        if (codec.toLowerCase().startsWith(&quot;opus&quot;)) {"
+        errorLine2="                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/plivo/endpoint/RtpStats.java"
+            line="535"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        } else if (codec.toLowerCase().startsWith(&quot;pcmu&quot;)) {"
+        errorLine2="                         ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/plivo/endpoint/RtpStats.java"
+            line="537"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="                        String sAddr = addr.getHostAddress().toUpperCase();"
+        errorLine2="                                                             ~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/plivo/endpoint/Utils.java"
+            line="129"
+            column="62"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 24 (current min is 21): `java.util.function.Supplier#get`"
+        errorLine1="  loggingEvent.addArgument(objectSupplier.get());"
+        errorLine2="                                          ~~~">
+        <location
+            file="src/main/java/com/plivo/endpoint/slf4j/spi/DefaultLoggingEventBuilder.java"
+            line="50"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 24 (current min is 21): `java.util.function.Supplier#get`"
+        errorLine1="   log(messageSupplier.get());"
+        errorLine2="                       ~~~">
+        <location
+            file="src/main/java/com/plivo/endpoint/slf4j/spi/DefaultLoggingEventBuilder.java"
+            line="156"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 24 (current min is 21): `java.util.function.Supplier#get`"
+        errorLine1="  loggingEvent.addKeyValue(key, value.get());"
+        errorLine2="                                      ~~~">
+        <location
+            file="src/main/java/com/plivo/endpoint/slf4j/spi/DefaultLoggingEventBuilder.java"
+            line="168"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="UseValueOf"
+        message="Use `Integer.valueOf(vers.trim())` instead"
+        errorLine1="    v = new Integer( vers.trim() );"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/plivo/endpoint/java_websocket/drafts/Draft.java"
+            line="299"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.app_name` appears to be unused"
+        errorLine1="    &lt;string name=&quot;app_name&quot;>plivoEndpoint&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="2"
+            column="13"/>
+    </issue>
+
+</issues>

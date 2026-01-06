@@ -1,0 +1,13 @@
+prefix=/Users/rahul/dev/new_plivo-resip-krishna/new_plivo_resip_ios/plivo-resip/openssl/openssl/arm64-v8a
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+enginesdir=${libdir}/engines
+
+Name: OpenSSL-libcrypto
+Description: OpenSSL cryptography library
+Version: 1.0.2k
+Requires: 
+Libs: -L${libdir} -lcrypto
+Libs.private: -ldl
+Cflags: -I${includedir} 

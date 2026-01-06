@@ -1,0 +1,4 @@
+rootProject.name = "Plivo-webrtc-android-sdk"
+include ':PlivoEndpoint'
+include ':app'
+project(':app').projectDir = new File(rootDir, 'plivo-android-quickstart-app/app')
