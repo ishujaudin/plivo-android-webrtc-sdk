@@ -13,11 +13,10 @@ buildscript {
     }
 }
 android {
-    compileSdkVersion 32
-    buildToolsVersion "28.0.3"
+    compileSdk=34
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 32
+        minSdk=26
+        targetSdk=34
         versionCode 1
         versionName "3.0.1-beta.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

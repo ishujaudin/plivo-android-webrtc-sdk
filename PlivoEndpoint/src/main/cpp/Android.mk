@@ -76,8 +76,18 @@ LOCAL_SRC_FILES := $(FILE_LIST:$(LOCAL_PATH)/%=%) ../cpp/rtcsip_jni.cpp ../cpp/S
 #LOCAL_SRC_FILES := $(FILE_LIST:$(LOCAL_PATH)/%=%) $(LOCAL_PATH)/  ../cpp/rtcsip_jni.cpp ../cpp/SipControllerCore.cpp
 #LOCAL_SRC_FILES :=  $(LOCAL_PATH)/  ../cpp/rtcsip_jni.cpp ../cpp/SipControllerCore.cpp
 #LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../src/main/cpp
-LOCAL_LDLIBS    := -Wl,--gc-sections -llog -landroid -std=c++11  -fexceptions -fstack-protector
-LOCAL_CFLAGS := -Os -fomit-frame-pointer -ffunction-sections -fdata-sections -std=c++11 -fexceptions -frtti -fstack-protector -DUSE_SSL -DUSE_ARES -DUSE_IPV6
+
+# ============================================
+# 16 KB PAGE SIZE ALIGNMENT FLAGS
+# ============================================
+# Linker flags for 16 KB page size alignment (required for Android 15+)
+LOCAL_LDLIBS    := -Wl,--gc-sections -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384 -llog -landroid
+
+# C flags (applies to both C and C++ files)
+LOCAL_CFLAGS := -Os -fomit-frame-pointer -ffunction-sections -fdata-sections -fstack-protector -DUSE_SSL -DUSE_ARES -DUSE_IPV6
+
+# C++ flags (applies only to C++ files, not C files)
+LOCAL_CPPFLAGS := -std=c++11 -fexceptions -frtti
 #ifeq ($(APP_USE_SSL),true)
 #    LOCAL_CFLAGS +=
 #endif

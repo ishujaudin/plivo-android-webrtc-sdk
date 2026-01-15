@@ -73,7 +73,7 @@ def createVariantCoverage(variant) {
         description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build."
 
         reports {
-            html.enabled(true)
+//            html.enabled(true)
         }
 
         def javaClasses = fileTree(dir: variant.javaCompileProvider.get().destinationDir, excludes: project.excludes)
@@ -132,19 +132,157 @@ def createVariantCoverage(variant) {
 
 
 android {
+    namespace = "com.plivo.endpoint"
+
     lintOptions {
         baseline file("lint-baseline.xml")
         checkDependencies false
     }
-    compileSdkVersion 34
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 35
+    buildToolsVersion "35.0.0"
+    
+    // NDK version for 16 KB page size support
+    // NDK r28+ supports 16 KB alignment by default
+    // REQUIRED: Must use NDK r28 or higher for 16 KB page size support
+    ndkVersion "28.0.12674087"
+    
+    // ============================================
+    // NDK VERSION VALIDATION - ENFORCES r28+
+    // ============================================
+    // This validation prevents builds with old NDK versions
+    // Old NDK versions (< r28) cannot build 16 KB aligned libraries
+    // Note: Validation runs only when NDK is actually needed (during build tasks)
+    tasks.whenTaskAdded { task ->
+        // Only validate when building native code
+        if (task.name.contains("externalNativeBuild") || task.name.contains("ndkBuild") || task.name.contains("assemble")) {
+            task.doFirst {
+                def requiredMajorVersion = 28
+                def recommendedVersion = "28.0.12674087"
+                
+                try {
+                    // Get NDK directory (may throw exception if not installed)
+                    def ndkDir = android.ndkDirectory
+                    
+                    if (ndkDir == null || !ndkDir.exists()) {
+                        throw new GradleException("""
+╔════════════════════════════════════════════════════════════════╗
+║                    ❌ NDK NOT FOUND                            ║
+╚════════════════════════════════════════════════════════════════╝
+
+This project REQUIRES Android NDK r28 or higher for 16 KB page size support.
+
+📋 INSTALLATION STEPS:
+1. Open Android Studio
+2. Go to: Tools > SDK Manager > SDK Tools tab
+3. Check "Show Package Details"
+4. Expand "NDK (Side by side)"
+5. Check version 28.0.12674087 or higher
+6. Click Apply to install
+7. Sync project
+
+📝 ALTERNATIVE (local.properties):
+Add this line to local.properties:
+ndk.dir=/path/to/Android/sdk/ndk/28.0.12674087
+
+Current NDK version specified: ${android.ndkVersion ?: "Not set"}
+                        """)
+                    }
+                    
+                    // Validate NDK version from source.properties
+                    def sourceProps = new File(ndkDir, "source.properties")
+                    if (sourceProps.exists()) {
+                        def props = new Properties()
+                        props.load(new FileInputStream(sourceProps))
+                        def installedVersion = props.getProperty("Pkg.Revision", "unknown")
+                        
+                        // Extract major version number
+                        def versionParts = installedVersion.split("\\.")
+                        if (versionParts.length > 0) {
+                            try {
+                                def majorVersion = versionParts[0] as Integer
+                                
+                                if (majorVersion < requiredMajorVersion) {
+                                    throw new GradleException("""
+╔════════════════════════════════════════════════════════════════╗
+║            ❌ INCOMPATIBLE NDK VERSION DETECTED                 ║
+╚════════════════════════════════════════════════════════════════╝
+
+Installed NDK Version: r${installedVersion}
+Required NDK Version:  r${requiredMajorVersion} or higher (r${recommendedVersion} recommended)
+
+⚠️  YOUR NDK VERSION IS TOO OLD!
+
+This will cause:
+  • Build failures on Android 15+ devices
+  • Google Play rejection (starting Nov 1, 2025)
+  • App crashes on 16 KB page size devices
+  • Native libraries will be 4 KB aligned (incompatible)
+
+🔧 SOLUTION:
+1. Open Android Studio > SDK Manager > SDK Tools
+2. Update NDK to version ${recommendedVersion} or higher
+3. Sync project and rebuild
+
+Current NDK path: ${ndkDir}
+
+💡 TIP: You can also set NDK version in local.properties:
+   ndk.dir=${ndkDir.parent}/28.0.12674087
+                                    """)
+                                } else {
+                                    println """
+╔════════════════════════════════════════════════════════════════╗
+║                    ✅ NDK VERSION CHECK PASSED                  ║
+╚════════════════════════════════════════════════════════════════╝
+   NDK Version: r${installedVersion}
+   16 KB Support: ENABLED
+   NDK Path: ${ndkDir}
+                                    """
+                                }
+                            } catch (NumberFormatException e) {
+                                println "⚠️  Warning: Could not parse NDK version: ${installedVersion}"
+                            }
+                        }
+                    } else {
+                        println "⚠️  Warning: Could not find source.properties in NDK directory"
+                        println "   NDK Path: ${ndkDir}"
+                        println "   Please ensure you're using NDK r${requiredMajorVersion} or higher"
+                    }
+                } catch (Exception e) {
+                    // If NDK is not installed, only fail during actual build tasks
+                    if (task.name.contains("assemble") || task.name.contains("ndkBuild")) {
+                        throw new GradleException("""
+╔════════════════════════════════════════════════════════════════╗
+║                    ❌ NDK NOT INSTALLED                         ║
+╚════════════════════════════════════════════════════════════════╝
+
+NDK is required to build native libraries with 16 KB page size support.
+
+📋 INSTALLATION STEPS:
+1. Open Android Studio
+2. Go to: Tools > SDK Manager > SDK Tools tab
+3. Check "Show Package Details"
+4. Expand "NDK (Side by side)"
+5. Check version 28.0.12674087 or higher
+6. Click Apply to install
+7. Sync project
+
+Error: ${e.message}
+                        """, e)
+                    }
+                    // For other tasks, just warn
+                    println "⚠️  Warning: NDK validation skipped - ${e.message}"
+                }
+            }
+        }
+    }
+    
 //    ndkPath ndkPathDef
     defaultConfig {
         minSdkVersion 21
         configurations.all {
             resolutionStrategy { force 'androidx.core:core:1.6.0' }
         }
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 1
         versionName project.libraryVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -165,9 +303,16 @@ android {
             testCoverageEnabled true
         }
     }
+    buildFeatures {
+        buildConfig true
+    }
+    // Modern packaging for 16 KB page size support
     packagingOptions {
         resources {
             excludes += ['META-INF/proguard/androidx-annotations.pro']
+        }
+        jniLibs {
+            useLegacyPackaging = false  // Modern packaging for 16 KB alignment
         }
     }
     compileOptions {
@@ -184,6 +329,8 @@ android {
     externalNativeBuild {
         ndkBuild {
             path "src/main/cpp/Android.mk"
+            // 16 KB page size alignment flags are set in Application.mk
+            // APP_LDFLAGS is already configured there for 16 KB support
         }
     }
 

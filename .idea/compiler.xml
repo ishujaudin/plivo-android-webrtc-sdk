@@ -3,7 +3,6 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
       <module name="plivo-android-quickstart-app.Plivo-webrtc-android-sdk.app" target="11" />
-      <module name="Plivo-webrtc-android-sdk.PlivoEndpoint" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
