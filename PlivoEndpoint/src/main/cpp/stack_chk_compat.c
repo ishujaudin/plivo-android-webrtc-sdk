@@ -5,12 +5,12 @@
  * 
  * This is needed because:
  * - Old OpenSSL (1.0.2k) was compiled with an older NDK that used __stack_chk_fail_local
- *   for stack smashing protection on 32-bit x86.
+ *   for stack smashing protection on x86 architectures (both 32-bit and 64-bit).
  * - New NDK (r28+) uses __stack_chk_fail instead (without _local suffix).
  * 
  * This shim provides __stack_chk_fail_local by forwarding to __stack_chk_fail.
  * 
- * Only needed for x86 (32-bit) builds.
+ * Needed for x86 architectures (__i386__ and __x86_64__).
  */
 
 #if defined(__i386__) || defined(__x86_64__)

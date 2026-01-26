@@ -247,12 +247,24 @@ Current NDK path: ${ndkDir}
                         println "   NDK Path: ${ndkDir}"
                         println "   Please ensure you're using NDK r${requiredMajorVersion} or higher"
                     }
+                } catch (GradleException e) {
+                    // Re-throw GradleExceptions (e.g., NDK not found, incompatible version)
+                    // These are already user-friendly error messages
+                    throw e
                 } catch (Exception e) {
-                    // If NDK is not installed, only fail during actual build tasks
-                    if (task.name.contains("assemble") || task.name.contains("ndkBuild")) {
+                    // Handle other exceptions (e.g., FileNotFoundException, IOException)
+                    // Since we're already in a block that only runs for NDK-related tasks,
+                    // we should fail for all of them to prevent silent build failures
+                    def isNdkRelatedTask = task.name.contains("externalNativeBuild") || 
+                                          task.name.contains("ndkBuild") || 
+                                          task.name.contains("assemble") ||
+                                          task.name.contains("compile") ||
+                                          task.name.contains("link")
+                    
+                    if (isNdkRelatedTask) {
                         throw new GradleException("""
 ╔════════════════════════════════════════════════════════════════╗
-║                    ❌ NDK NOT INSTALLED                         ║
+║                    ❌ NDK VALIDATION ERROR                      ║
 ╚════════════════════════════════════════════════════════════════╝
 
 NDK is required to build native libraries with 16 KB page size support.
@@ -267,10 +279,12 @@ NDK is required to build native libraries with 16 KB page size support.
 7. Sync project
 
 Error: ${e.message}
+Task: ${task.name}
                         """, e)
+                    } else {
+                        // For non-NDK tasks that somehow reached here, just warn
+                        println "⚠️  Warning: NDK validation skipped for task '${task.name}' - ${e.message}"
                     }
-                    // For other tasks, just warn
-                    println "⚠️  Warning: NDK validation skipped - ${e.message}"
                 }
             }
         }
@@ -340,7 +354,7 @@ Error: ${e.message}
 }
 
 task wrapper(type: Wrapper){
-    gradleVersion = '7.2'
+    gradleVersion = '8.9'
 }
 
 dependencies {
