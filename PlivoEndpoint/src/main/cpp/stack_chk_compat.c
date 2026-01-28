@@ -15,8 +15,6 @@
 
 #if defined(__i386__) || defined(__x86_64__)
 
-#include <stdlib.h>
-
 // External declaration of the standard __stack_chk_fail
 extern void __stack_chk_fail(void);
 

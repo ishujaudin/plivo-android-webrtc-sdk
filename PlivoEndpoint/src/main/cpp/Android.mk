@@ -80,8 +80,9 @@ LOCAL_SRC_FILES := $(FILE_LIST:$(LOCAL_PATH)/%=%) ../cpp/rtcsip_jni.cpp ../cpp/S
 # ============================================
 # 16 KB PAGE SIZE ALIGNMENT FLAGS
 # ============================================
-# Linker flags for 16 KB page size alignment (required for Android 15+)
-LOCAL_LDLIBS    := -Wl,--gc-sections -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384 -llog -landroid
+# NOTE: Global 16 KB linker flags are configured via APP_LDFLAGS
+# in Application.mk. We only keep module-specific flags here.
+LOCAL_LDLIBS    := -Wl,--gc-sections -llog -landroid
 
 # C flags (applies to both C and C++ files)
 LOCAL_CFLAGS := -Os -fomit-frame-pointer -ffunction-sections -fdata-sections -fstack-protector -DUSE_SSL -DUSE_ARES -DUSE_IPV6
