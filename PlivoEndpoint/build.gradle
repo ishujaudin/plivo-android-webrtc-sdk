@@ -148,6 +148,8 @@ android {
             resolutionStrategy { force 'androidx.core:core:1.6.0' }
         }
         targetSdkVersion 35
+        // Version code intentionally bumped from 1 to 30203 to align with
+        // existing production artifacts and maintain upgrade paths.
         versionCode 30203
         versionName project.libraryVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
